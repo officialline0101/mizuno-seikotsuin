@@ -1061,12 +1061,23 @@ if (table.rows.length === 0) {
                         return acc;
                     }, 0);
 
-                    // 土曜日だけ16:30から18:00までを✕に設定
+                    // 土曜日だけ12:00から19:00までを✕に設定
                     if (
                         slotStart.getDay() === 6 && // 土曜日の場合
-                        ((slotStart.getHours() === 16 && slotStart.getMinutes() >= 30) ||
-                            (slotStart.getHours() === 17) ||
-                            (slotStart.getHours() === 18 && slotStart.getMinutes() < 30))
+                        ((slotStart.getHours() >= 12 && slotStart.getHours() < 19) || // 12:00から18:59
+                            (slotStart.getHours() === 19 && slotStart.getMinutes() === 0)) // 19:00ちょうど
+                    ) {
+                        cell.textContent = '✕';
+                        cell.classList.add('unavailable');
+                        cell.setAttribute('data-date', slotStart.toISOString());
+                        continue;
+                    }
+
+                    // 土曜日だけ12:00から19:00までを✕に設定
+                    if (
+                        slotStart.getDay() === 3 && // 土曜日の場合
+                        ((slotStart.getHours() >= 12 && slotStart.getHours() < 19) || // 12:00から18:59
+                            (slotStart.getHours() === 19 && slotStart.getMinutes() === 0)) // 19:00ちょうど
                     ) {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
