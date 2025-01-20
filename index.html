@@ -990,6 +990,10 @@ if (table.rows.length === 0) {
             // 現在の日時を取得
             const now = new Date();
 
+// 現在の日時から12時間後を計算
+const twelveHoursLater = new Date(now);
+twelveHoursLater.setHours(now.getHours() + 12);
+
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
                 const day = new Date(currentDate);
@@ -1031,15 +1035,12 @@ if (table.rows.length === 0) {
                         continue;
                     }
 
-                    // リアルタイムで過ぎた時間のセルを×にする条件
-                    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000); // 現在の時間から1時間後の時間を計算
-
-                    if (slotStart < now || (slotStart >= now && slotStart < oneHourLater)) {
-                        cell.textContent = '✕';
-                        cell.classList.add('unavailable');
-                        cell.setAttribute('data-date', slotStart.toISOString());
-                        continue;
-                    }
+        // リアルタイムで現在の時間を過ぎた時間帯や12時間後の時間帯は✕にする
+        if (slotStart < now || slotStart < twelveHoursLater) {
+            cell.textContent = '✕';
+            cell.classList.add('unavailable');
+            continue;
+        }
 
                     const isBusinessDay = businessDays.some(businessDay => {
                         const businessDayStart = new Date(businessDay.start);
