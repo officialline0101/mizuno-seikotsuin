@@ -1142,11 +1142,6 @@ twelveHoursLater.setHours(now.getHours() + 12);
                         cell.textContent = '✕'; // 休日のため利用不可
                         cell.classList.add('unavailable'); // 利用不可スタイルを適用
                     }
-                    // 休日（金曜日）で、ビジネスデーでない場合
-                    else if (slotStart.getDay() === 5 && !isBusinessDay && businessEventTimes.length === 0) {
-                        cell.textContent = '✕'; // 休日のため利用不可
-                        cell.classList.add('unavailable'); // 利用不可スタイルを適用
-                    }
                     // 営業日でイベントがない場合
                     else if (isBusinessDay && count === 0) {
                         // 土曜日で特別な処理を追加
