@@ -436,7 +436,12 @@
 <body>
     <div class="container">
         <h1>みずの接骨院<br>予約フォーム</h1>
-        
+
+        <div class="info-text">
+            ⇩巻き爪専門院の予約フォームはこちらから⇩<br>
+            <button id="sendMessage">巻き爪専門院予約フォーム</button>
+        </div>
+
         <div class="label">お客様名※必須</div>
         <input type="text" id="name" placeholder="お名前を入力してください">
 
@@ -447,7 +452,7 @@
         <div class="info-text">※ご来店回数を選択すると空き状況のカレンダーが表示されます</div>
         <div class="visit-buttons">
             <button type="button" id="firstVisit" onclick="selectVisit(this)">初めての方・1ケ月以上来院されてない方</button>
-            <button type="button" id="repeatVisit" onclick="selectVisit(this)">1ケ月以内に通院されてる方はこちら</button>
+            <button type="button" id="repeatVisit" onclick="selectVisit(this)">2回目以降の方</button>
         </div>
 
         <div class="label">メニューをお選びください</div>
@@ -518,6 +523,24 @@
                 console.log('LIFF初期化失敗', err);
             });
 
+            // ボタンのクリックイベント設定
+            document.getElementById('sendMessage').addEventListener('click', function () {
+                // メッセージ送信
+                liff.sendMessages([{
+                    type: 'text',
+                    text: '巻き爪専門院予約フォーム'
+                }]).then(() => {
+                    console.log('メッセージ送信成功');
+                    // LIFFを閉じる
+                    liff.closeWindow();
+                }).catch((err) => {
+                    console.error('メッセージ送信失敗', err);
+                    // エラー時でもLIFFを閉じる
+                    liff.closeWindow();
+                });
+            });
+
+            // 空き状況の取得（既存コード）
             fetchAvailability(currentDate);
         });
 
@@ -537,14 +560,12 @@
         let selectedirradiationsTime = 0; // 訪問回数で選択された時間
 
         let menuTimes = {
-            '新規様_産後の骨盤矯正プログラム': 60,
-            '新規様_マタニティ': 60,
-            '新規様_姿勢・頭痛・外反母趾・尿もれ': 60,
+            '産後の骨盤矯正プログラム': 60,
+            'マタニティ': 60,
+            '姿勢・頭痛・外反母趾・尿もれ': 60,
             '産後の骨盤矯正プログラム.': 30,
             'マタニティ.': 30,
-            '姿勢・頭痛・外反母趾・尿もれ.': 30,
-            '巻き爪': 60,
-            '巻き爪.': 30
+            '姿勢・頭痛・外反母趾・尿もれ.': 30
         };
 
 
@@ -604,18 +625,18 @@
         });
 
         document.querySelectorAll('.symptoms button').forEach(button => {
-    button.addEventListener('click', () => {
-        const calendarContainer = document.querySelector('.calendar-container');
+            button.addEventListener('click', () => {
+                const calendarContainer = document.querySelector('.calendar-container');
 
-        // 選択されたメニューがあればカレンダーを表示
-        if (document.querySelectorAll('.symptoms button.active').length > 0) {
-            calendarContainer.style.display = 'block';
-        } else {
-            // 選択が解除された場合、カレンダーを非表示
-            calendarContainer.style.display = 'none';
-        }
-    });
-});
+                // 選択されたメニューがあればカレンダーを表示
+                if (document.querySelectorAll('.symptoms button.active').length > 0) {
+                    calendarContainer.style.display = 'block';
+                } else {
+                    // 選択が解除された場合、カレンダーを非表示
+                    calendarContainer.style.display = 'none';
+                }
+            });
+        });
 
         // 初期状態でカレンダーを非表示にする
         document.addEventListener('DOMContentLoaded', () => {
@@ -788,30 +809,30 @@
 
             console.log('選択された訪問回数の時間:', selectedVisitTime);
 
-    // 来院回数に応じてメニューを変更
-    const symptomsContainer = document.querySelector('.symptoms');
-    if (visitCount === "1ケ月以内に通院されてる方はこちら") {
-        symptomsContainer.innerHTML = `
+            // 来院回数に応じてメニューを変更
+            const symptomsContainer = document.querySelector('.symptoms');
+            if (visitCount === "2回目以降の方") {
+                symptomsContainer.innerHTML = `
+            <button type="button" onclick="selectSymptom(this, 'treatment5')" data-price="6500">産後の骨盤矯正プログラム.</button>
+            <button type="button" onclick="selectSymptom(this, 'treatment6')" data-price="4500">マタニティ.</button>
+            <button type="button" onclick="selectSymptom(this, 'treatment7')" data-price="8700">姿勢・頭痛・外反母趾・尿もれ.</button>
+        `;
+            } else {
+                // 初めての場合、元のメニューに戻す
+                symptomsContainer.innerHTML = `
             <button type="button" onclick="selectSymptom(this, 'treatment5')" data-price="6500">産後の骨盤矯正プログラム</button>
             <button type="button" onclick="selectSymptom(this, 'treatment6')" data-price="4500">マタニティ</button>
             <button type="button" onclick="selectSymptom(this, 'treatment7')" data-price="8700">姿勢・頭痛・外反母趾・尿もれ</button>
         `;
-    } else {
-        // 初めての場合、元のメニューに戻す
-        symptomsContainer.innerHTML = `
-            <button type="button" onclick="selectSymptom(this, 'treatment5')" data-price="6500">新規様_産後の骨盤矯正プログラム</button>
-            <button type="button" onclick="selectSymptom(this, 'treatment6')" data-price="4500">新規様_マタニティ</button>
-            <button type="button" onclick="selectSymptom(this, 'treatment7')" data-price="8700">新規様_姿勢・頭痛・外反母趾・尿もれ</button>
-        `;
-    }
+            }
 
-    // メニュー変更後にカレンダーを表示
-    const calendarContainer = document.querySelector('.calendar-container');
-    calendarContainer.style.display = 'block';
+            // メニュー変更後にカレンダーを表示
+            const calendarContainer = document.querySelector('.calendar-container');
+            calendarContainer.style.display = 'block';
 
-    // 空き状況を再取得
-    fetchAvailability(currentDate);
-}
+            // 空き状況を再取得
+            fetchAvailability(currentDate);
+        }
 
         function selectDate(cell) {
             // "unavailable" クラスが付いている場合はクリックを無効化
@@ -878,7 +899,7 @@
             // LINEトークにメッセージを送信
             liff.sendMessages([{
                 type: 'text',
-                text: `【予約フォーム】\nお名前：${formData.name}\n電話番号：${formData.phone}\n来院回数：${formData.visitCount}\nメニュー：${formData.selectedSymptom}\n希望日時：\n ${formData.dates[0]}\nメッセージ：${formData.message}`
+                text: `【みずの接骨院予約フォーム】\nお名前：${formData.name}\n電話番号：${formData.phone}\n来院回数：${formData.visitCount}\nメニュー：${formData.selectedSymptom}\n希望日時：\n ${formData.dates[0]}\nメッセージ：${formData.message}`
             }]).then(() => {
                 /* メッセージ送信成功時の処理 */
                 alert('当日キャンセルは無いようにお願いいたします。');
@@ -910,7 +931,7 @@
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbyMMClOhIgeXdJpy5j-IKKX7BizhRBBIXGfqA9_ab0lxkcBK1pPpApyTZlBfA6XQcJV/exec' +
+            const url = 'https://script.google.com/macros/s/AKfycbylqfZM39ZONDd_0y3pzZ5JbAA-gG9hikSQ_-eY2YPaqrnUQktWyCpEI7vb5_WqNh7w/exec' +
                 `?startTime=${startTime.toISOString()}&endTime=${endTime.toISOString()}`;
 
             try {
@@ -950,30 +971,30 @@
                 '18:00'
             ];
 
-if (table.rows.length === 0) {
-    for (const time of times) {
-        const row = document.createElement('tr');
-        const timeCell = document.createElement('td');
-        timeCell.textContent = time;
-        row.appendChild(timeCell);
+            if (table.rows.length === 0) {
+                for (const time of times) {
+                    const row = document.createElement('tr');
+                    const timeCell = document.createElement('td');
+                    timeCell.textContent = time;
+                    row.appendChild(timeCell);
 
-        for (let i = 0; i < 7; i++) {
-            const cell = document.createElement('td');
+                    for (let i = 0; i < 7; i++) {
+                        const cell = document.createElement('td');
 
-            // unavailable と unavailablegray クラスがある場合は選択不可
-            cell.addEventListener('click', () => {
-                if (cell.classList.contains('unavailable') || cell.classList.contains('unavailablegray')) {
-                    return; // 何もしない
+                        // unavailable と unavailablegray クラスがある場合は選択不可
+                        cell.addEventListener('click', () => {
+                            if (cell.classList.contains('unavailable') || cell.classList.contains('unavailablegray')) {
+                                return; // 何もしない
+                            }
+                            selectDate(cell);
+                        });
+
+                        row.appendChild(cell);
+                    }
+
+                    table.appendChild(row);
                 }
-                selectDate(cell);
-            });
-
-            row.appendChild(cell);
-        }
-
-        table.appendChild(row);
-    }
-}
+            }
 
             // テーブルのヘッダーを更新
             updateCalendarHeader(currentDate);
@@ -990,9 +1011,9 @@ if (table.rows.length === 0) {
             // 現在の日時を取得
             const now = new Date();
 
-// 現在の日時から12時間後を計算
-const twelveHoursLater = new Date(now);
-twelveHoursLater.setHours(now.getHours() + 12);
+            // 現在の日時から12時間後を計算
+            const twelveHoursLater = new Date(now);
+            twelveHoursLater.setHours(now.getHours() + 12);
 
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
@@ -1035,12 +1056,12 @@ twelveHoursLater.setHours(now.getHours() + 12);
                         continue;
                     }
 
-        // リアルタイムで現在の時間を過ぎた時間帯や12時間後の時間帯は✕にする
-        if (slotStart < now || slotStart < twelveHoursLater) {
-            cell.textContent = '✕';
-            cell.classList.add('unavailable');
-            continue;
-        }
+                    // リアルタイムで現在の時間を過ぎた時間帯や12時間後の時間帯は✕にする
+                    if (slotStart < now || slotStart < twelveHoursLater) {
+                        cell.textContent = '✕';
+                        cell.classList.add('unavailable');
+                        continue;
+                    }
 
                     const isBusinessDay = businessDays.some(businessDay => {
                         const businessDayStart = new Date(businessDay.start);
