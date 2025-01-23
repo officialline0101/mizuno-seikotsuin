@@ -1062,131 +1062,54 @@ twelveHoursLater.setHours(now.getHours() + 12);
                         return acc;
                     }, 0);
 
-                    // 土曜日だけ12:00から19:00までを✕に設定
-                    if (
-                        slotStart.getDay() === 6 && // 土曜日の場合
-                        ((slotStart.getHours() >= 12 && slotStart.getHours() < 19) || // 12:00から18:59
-                            (slotStart.getHours() === 19 && slotStart.getMinutes() === 0)) // 19:00ちょうど
-                    ) {
+                    // 営業日のイベント時間内に他のイベントがある場合
+                    if (isBusinessEventTime && count > 0) {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
-                        cell.setAttribute('data-date', slotStart.toISOString());
-                        continue;
                     }
-
-                    // 土曜日だけ12:00から19:00までを✕に設定
-                    if (
-                        slotStart.getDay() === 3 && // 土曜日の場合
-                        ((slotStart.getHours() >= 12 && slotStart.getHours() < 19) || // 12:00から18:59
-                            (slotStart.getHours() === 19 && slotStart.getMinutes() === 0)) // 19:00ちょうど
-                    ) {
-                        cell.textContent = '✕';
-                        cell.classList.add('unavailable');
-                        cell.setAttribute('data-date', slotStart.toISOString());
-                        continue;
-                    }
-
-                    // 11:30 - 13:30 を✕に設定
-                    if (
-                        (slotStart.getHours() === 11 && slotStart.getMinutes() >= 30) ||
+                    else if (slotStart.getHours() === 11 ||
                         (slotStart.getHours() === 12) ||
-                        (slotStart.getHours() === 13 && slotStart.getMinutes() <= 30)
-                    ) {
+                        (slotStart.getHours() === 13 && slotStart.getMinutes() < 30)) {
                         cell.textContent = '✕';
-                        cell.classList.add('unavailable'); // クラスを追加
-                        cell.setAttribute('data-date', slotStart.toISOString());
-                        continue;
+                        cell.classList.add('unavailable');
                     }
-
-                    // 土曜日以外の曜日で12:30 - 13:59 を✕に設定
-                    if (
-                        (slotStart.getDay() !== 6) && // 土曜日以外
-                        ((slotStart.getHours() === 12 && slotStart.getMinutes() >= 30) ||
-                            (slotStart.getHours() === 13 && slotStart.getMinutes() < 60))
+                    // 水曜日と土曜日で11:00～19:00の時間帯は×に設定
+                    else if (
+                        (slotStart.getDay() === 3 || slotStart.getDay() === 6) && // 水曜日(3)または土曜日(6)
+                        (slotStart.getHours() >= 11 && slotStart.getHours() < 19)
                     ) {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
-                        cell.setAttribute('data-date', slotStart.toISOString());
-                        continue;
                     }
-
-                    // 営業日の時間帯で、他にイベントがない場合
+                    // 営業日のイベント時間（他のイベントがない場合）
                     else if (isBusinessEventTime) {
-                        // 土曜日で特別な処理を追加
-                        if (slotStart.getDay() === 6) { // 土曜日の場合
-                            if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red'); // 午前は青で利用可能
-                            } else {
-                                cell.classList.add('available', 'red'); // 午後は赤で利用可能
-                            }
-                        }
-                        // 他の曜日の処理
-                        else {
-                            if ((slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) && count > 0) {
-                                cell.textContent = '✕';
-                                cell.classList.add('unavailable');
-                            } else if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red'); // 午前は青で利用可能
-                            } else {
-                                cell.classList.add('available', 'blue'); // 午後は赤で利用可能
-                            }
-                        }
+                        cell.textContent = '◯';
+                        cell.classList.add('available');
                     }
-                    // 営業日で他にイベントがある場合
+                    // 営業日で、指定されている時間以外の時間は×
                     else if (businessEventTimes.length > 0) {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     }
-                    // 休日（日曜日）で、ビジネスデーでない場合
+                    // 日曜日で、営業日ではない場合
                     else if (slotStart.getDay() === 0 && !isBusinessDay && businessEventTimes.length === 0) {
-                        cell.textContent = '✕'; // 休日のため利用不可
-                        cell.classList.add('unavailable'); // 利用不可スタイルを適用
+                        cell.textContent = '✕';
+                        cell.classList.add('unavailable');
                     }
-                    // 営業日でイベントがない場合
+                    // 営業日でかつ他のイベントがない場合
                     else if (isBusinessDay && count === 0) {
-                        // 土曜日で特別な処理を追加
-                        if (slotStart.getDay() === 6) { // 土曜日の場合
-                            if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red');
-                            } else {
-                                cell.classList.add('available', 'red');
-                            }
-                        }
-                        // 他の曜日の処理
-                        else {
-                            if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red');
-                            } else {
-                                cell.classList.add('available', 'blue');
-                            }
-                        }
+                        cell.textContent = '◯';
+                        cell.classList.add('available');
                     }
-                    // その他の場合（利用可能なイベントがない場合）
-                    else if (count === 0) {
-                        // 土曜日で特別な処理を追加
-                        if (slotStart.getDay() === 6) { // 土曜日の場合
-                            if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red');
-                            } else {
-                                cell.classList.add('available', 'red');
-                            }
-                        }
-                        // 他の曜日の処理
-                        else {
-                            if (slotStart.getHours() < 12 || (slotStart.getHours() === 12 && slotStart.getMinutes() < 30)) {
-                                cell.classList.add('available', 'red');
-                            } else {
-                                cell.classList.add('available', 'blue');
-                            }
-                        }
-                    }
-                    // どの条件にも当てはまらない場合
-                    else {
+                    // それ以外の条件
+                    else if (count <= 0) {
+                        cell.textContent = '◯';
+                        cell.classList.add('available');
+                    } else {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     }
 
-                    // セルに日付を設定
                     cell.setAttribute('data-date', slotStart.toISOString());
                 }
             }
