@@ -1094,10 +1094,13 @@
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     }
-                    // 水曜日と土曜日で11:00～19:00の時間帯は×に設定
+                    // 水曜日と土曜日で11:30～19:00の時間帯は×に設定
                     else if (
                         (slotStart.getDay() === 3 || slotStart.getDay() === 6) && // 水曜日(3)または土曜日(6)
-                        (slotStart.getHours() >= 11 && slotStart.getHours() < 19)
+                        (
+                            (slotStart.getHours() === 11 && slotStart.getMinutes() >= 30) || // 11:30以降
+                            (slotStart.getHours() > 11 && slotStart.getHours() < 19)        // 12:00～18:59
+                        )
                     ) {
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
