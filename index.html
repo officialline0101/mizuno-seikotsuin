@@ -1088,7 +1088,7 @@
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     }
-                    else if (slotStart.getHours() === 11 ||
+                    else if ((slotStart.getHours() === 11 && slotStart.getMinutes() >= 30) ||
                         (slotStart.getHours() === 12) ||
                         (slotStart.getHours() === 13 && slotStart.getMinutes() < 50)) {
                         cell.textContent = '✕';
